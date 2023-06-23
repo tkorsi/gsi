@@ -12,6 +12,8 @@ type Screen struct {
 	fps        int
 	level      Level
 	Entities   []Drawable
+	offsetx    int
+	offsety    int
 }
 
 func NewScreen() *Screen {

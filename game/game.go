@@ -98,3 +98,21 @@ func max(a, b int) int {
 	}
 	return b
 }
+
+const (
+	EventKey EventType = iota
+	EventNone
+)
+
+type Physical interface {
+	Position() (int, int) // Return position, x and y
+	Size() (int, int)     // Return width and height
+}
+
+// DynamicPhysical represents something that can process its own collisions.
+// Implementing this is an optional addition to Drawable.
+type DynamicPhysical interface {
+	Position() (int, int) // Return position, x and y
+	Size() (int, int)     // Return width and height
+	Collide(Physical)     // Handle collisions with another Physical
+}
