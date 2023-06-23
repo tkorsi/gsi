@@ -45,7 +45,8 @@ func (s *Screen) Draw() {
 		e.Draw(s)
 	}
 	if !s.currCanvas.equals(&s.prevCanvas) {
-		termboxPixel(&s.currCanvas)
+		//termboxPixel(&s.currCanvas)
+		termboxNormal(&s.currCanvas)
 		termbox.Flush()
 	}
 	s.prevCanvas = s.currCanvas
@@ -54,7 +55,7 @@ func (s *Screen) Draw() {
 func (s *Screen) resize(width, height int) {
 	s.width = width
 	s.height = height
-	s.height *= 2 // pixel
+	//s.height *= 2 // pixel
 	canvas := NewCanvas(s.width, s.height)
 	// Copy old data that fits
 	for i := 0; i < min(s.width, len(s.currCanvas)); i++ {
@@ -90,6 +91,17 @@ func (s *Screen) RemoveEntity(d Drawable) {
 	}
 }
 
+func termboxNormal(canvas *Canvas) {
+	for i, col := range *canvas {
+		for j, cell := range col {
+			termbox.SetCell(i, j, cell.Character,
+				termbox.Attribute(cell.ForegroundColor),
+				termbox.Attribute(cell.BackgroundColor))
+		}
+	}
+
+}
+
 func termboxPixel(c *Canvas) {
 	for i, col := range *c {
 		for j := 0; j < len(col); j += 2 {
@@ -107,7 +119,7 @@ func termboxPixel(c *Canvas) {
 	}
 }
 
-func (s *Screen) SetFps(f int) {
+func (s *Screen) SetFps(f float64) {
 	s.fps = f
 }
 

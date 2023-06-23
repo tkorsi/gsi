@@ -114,7 +114,7 @@ mainloop:
 		}
 
 		g.screen.Draw()
-		time.Sleep(time.Duration((update.Sub(time.Now()).Seconds()*1000.0)+1000.0/g.screen.fps) * time.Millisecond)
+		time.Sleep(time.Duration((time.Until(update).Seconds()*1000.0)+1000.0/g.screen.fps) * time.Millisecond)
 	}
 }
 

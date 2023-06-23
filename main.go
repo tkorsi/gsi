@@ -12,7 +12,7 @@ type MovingText struct {
 	*tl.Text
 }
 
-func (m *MovingText) Tick(ev tl.Event) {
+func (m *MovingText) Update(ev tl.Event) {
 	// Enable arrow key movement
 	if ev.Type == tl.EventKey {
 		x, y := m.Position()
