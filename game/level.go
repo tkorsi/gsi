@@ -2,8 +2,8 @@ package game
 
 type Level interface {
 	DrawBackground(*Screen)
-	AddEntitiy(Drawable)
-	RemveEntity(Drawable)
+	AddEntity(Drawable)
+	RemoveEntity(Drawable)
 	Draw(*Screen)
 	Update(Event)
 }

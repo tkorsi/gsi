@@ -1,41 +1,55 @@
 package main
 
-import (
-	"fmt"
-	"os"
+import tl "github.com/tkorsi/gsi/game"
 
-	"github.com/tkorsi/gsi/game"
-	tl "github.com/tkorsi/gsi/game"
-)
-
-type MovingText struct {
-	*tl.Text
+type CollRec struct {
+	*tl.Polygon
+	move bool
+	px   int
+	py   int
 }
 
-func (m *MovingText) Update(ev tl.Event) {
+func NewCollRec(x, y, w, h int, color uint16, move bool) *CollRec {
+	return &CollRec{
+		Polygon: tl.NewPolygon(x, y, w, h, color),
+		move:    move,
+	}
+}
+
+func (r *CollRec) Update(ev tl.Event) {
 	// Enable arrow key movement
-	if ev.Type == tl.EventKey {
-		x, y := m.Position()
+	if ev.Type == tl.EventKey && r.move {
+		r.px, r.py = r.Position()
 		switch ev.Key {
 		case tl.KeyArrowRight:
-			x += 1
+			r.SetPosition(r.px+1, r.py)
 		case tl.KeyArrowLeft:
-			x -= 1
+			r.SetPosition(r.px-1, r.py)
 		case tl.KeyArrowUp:
-			y -= 1
+			r.SetPosition(r.px, r.py-1)
 		case tl.KeyArrowDown:
-			y += 1
+			r.SetPosition(r.px, r.py+1)
 		}
-		m.SetPosition(x, y)
+	}
+}
+
+func (r *CollRec) Collide(p tl.Physical) {
+	// Check if it's a CollRec we're colliding with
+	if _, ok := p.(*CollRec); ok && r.move {
+		r.SetColor(tl.ColorBlue)
+		r.SetPosition(r.px, r.py)
 	}
 }
 
 func main() {
-	if len(os.Args) < 2 {
-		fmt.Println("Please provide text")
-		return
-	}
-	g := game.NewGame()
-	g.Screen().AddEntity(&MovingText{tl.NewText(0, 0, os.Args[1], tl.ColorWhite, tl.ColorBlue)})
+	g := tl.NewGame()
+	g.Screen().SetFps(60)
+	l := tl.NewBaseLevel(tl.Cell{
+		BackgroundColor: tl.ColorWhite,
+	})
+	l.AddEntity(NewCollRec(3, 3, 3, 3, tl.ColorRed, true))
+	l.AddEntity(NewCollRec(7, 4, 3, 3, tl.ColorGreen, false))
+	g.Screen().SetLevel(l)
+	//g.Screen().AddEntity(tl.NewFpsText(0, 0, tl.ColorRed, tl.ColorDefault, 0.5))
 	g.Start()
 }
