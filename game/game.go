@@ -1,5 +1,7 @@
 package game
 
+import "github.com/nsf/termbox-go"
+
 type Canvas [][]Cell
 
 func NewCanvas(width, heigh int) Canvas {
@@ -55,4 +57,44 @@ func NewGame() *Game {
 		logs: make([]string, 0),
 	}
 	return &g
+}
+
+type Drawable interface {
+	Update(Event)
+	Draw(*Screen)
+}
+
+type Event struct {
+	Type      EventType
+	Key       Key // The key pressed
+	Character rune
+	Err       error
+}
+
+func convertEvent(ev termbox.Event) Event {
+	return Event{
+		Type:      EventType(ev.Type),
+		Key:       Key(ev.Key),
+		Character: ev.Ch,
+		Err:       ev.Err,
+	}
+}
+
+type (
+	Key       uint16
+	EventType uint8
+)
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
 }
