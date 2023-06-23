@@ -9,11 +9,12 @@ type Screen struct {
 	currCanvas Canvas
 	width      int
 	height     int
-	fps        int
+	fps        float64 // needs to be float for math
 	level      Level
 	Entities   []Drawable
 	offsetx    int
 	offsety    int
+	delta      float64
 }
 
 func NewScreen() *Screen {

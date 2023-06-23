@@ -1,6 +1,10 @@
 package game
 
-import "github.com/nsf/termbox-go"
+import (
+	"time"
+
+	"github.com/nsf/termbox-go"
+)
 
 type Canvas [][]Cell
 
@@ -48,15 +52,70 @@ func (c *Cell) equals(c2 *Cell) bool {
 }
 
 type Game struct {
-	debug bool
-	logs  []string
+	screen *Screen
+	debug  bool
+	input  *input
+	logs   []string
 }
 
 func NewGame() *Game {
 	g := Game{
-		logs: make([]string, 0),
+		screen: NewScreen(),
+		input:  newInput(),
+		logs:   make([]string, 0),
 	}
 	return &g
+}
+
+func (g *Game) Screen() *Screen {
+	return g.screen
+}
+
+func (g *Game) SetScreen(s *Screen) {
+	g.screen = s
+	g.screen.resize(termbox.Size())
+}
+
+func (g *Game) Start() {
+	err := termbox.Init()
+	termbox.SetOutputMode(termbox.Output256)
+	termbox.SetInputMode(termbox.InputAlt | termbox.InputMouse)
+	if err != nil {
+		panic(err)
+	}
+	//defer g.dumpLogs()
+	defer termbox.Close()
+	g.screen.resize(termbox.Size())
+
+	// Init input
+	g.input.start()
+	defer g.input.stop()
+	clock := time.Now()
+
+mainloop:
+	for {
+		update := time.Now()
+		g.screen.delta = update.Sub(clock).Seconds()
+		clock = update
+
+		select {
+		case ev := <-g.input.eventQ:
+			if ev.Key == g.input.endKey {
+				break mainloop
+			}
+			// else if EventType(ev.Type) == EventResize {
+			// 	g.screen.resize(ev.Width, ev.Height)
+			// } else if EventType(ev.Type) == EventError {
+			// 	g.Log(ev.Err.Error())
+			// }
+			g.screen.Update(convertEvent(ev))
+		default:
+			g.screen.Update(Event{Type: EventNone})
+		}
+
+		g.screen.Draw()
+		time.Sleep(time.Duration((update.Sub(time.Now()).Seconds()*1000.0)+1000.0/g.screen.fps) * time.Millisecond)
+	}
 }
 
 type Drawable interface {
