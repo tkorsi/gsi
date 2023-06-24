@@ -9,10 +9,8 @@ import (
 type Invaders struct {
 	*g.Entity
 	Game               *g.Game
-	BaseLevel          *g.BaseLevel
-	Level              *Level
-	Settings           *Settings
-	Player             *Player
+	Level              *g.BaseLevel
+	AlienCluster       *AlienCluster
 	AlienLaserVelocity float64
 	TimeDelta          float64
 	RefreshSpeed       time.Duration
@@ -25,14 +23,14 @@ func NewEngine() *Invaders {
 	e := Invaders{
 		Entity:             g.NewEntity(0, 0, 1, 1),
 		Game:               g.NewGame(),
-		BaseLevel:          g.NewBaseLevel(g.Cell{BackgroundColor: g.ColorBlack, ForegroundColor: g.ColorWhite}),
+		Level:              g.NewBaseLevel(g.Cell{BackgroundColor: g.ColorBlack, ForegroundColor: g.ColorWhite}),
 		AlienLaserVelocity: 0.04,
 		RefreshSpeed:       20,
 		Score:              0,
 	}
 
 	e.Game.Screen().SetFps(60)
-	e.BaseLevel.AddEntity(&e)
+	e.Level.AddEntity(&e)
 
 	return &e
 }
@@ -58,31 +56,31 @@ func (e *Invaders) initializeGame() {
 
 func (e *Invaders) initLevel() {
 	screenWidth, screenHeight := e.getScreenSize()
-	e.Level = newLevel(screenWidth, screenHeight)
-	e.BaseLevel.AddEntity(e.Level)
+	e.Level = xN(screenWidth, screenHeight)
+	invaders.Level.AddEntity(invaders.level)
 }
 
-func (e *Invaders) initHud() {
-	e.Settings = NewSettigns(e.Level, e.BaseLevel)
+func (invaders *Invaders) initHud() {
+	invaders.Hud = NewHud(invaders.level, invaders.Level)
 }
 
-func (e *Invaders) getScreenSize() (int, int) {
-	screenWidth, screenHeight := e.Game.Screen().Size()
+func (invaders *Invaders) getScreenSize() (int, int) {
+	screenWidth, screenHeight := invaders.Game.Screen().Size()
 
 	for screenWidth == 0 && screenHeight == 0 {
 		time.Sleep(100 * time.Millisecond)
-		screenWidth, screenHeight = e.Game.Screen().Size()
+		screenWidth, screenHeight = invaders.Game.Screen().Size()
 	}
 
 	return screenWidth, screenHeight
 }
 
-func (e *Invaders) initHero() {
-	e.Hero = NewHero(invaders.level)
-	e.BaseLevel.AddEntity(e.Hero)
+func (invaders *Invaders) initHero() {
+	invaders.Hero = NewHero(invaders.level)
+	invaders.Level.AddEntity(invaders.Hero)
 }
 
-func (e *Invaders) initAliens() {
+func (invaders *Invaders) initAliens() {
 	invaders.AlienCluster = NewAlienCluster()
 	SetPositionAndRenderAliens(invaders.AlienCluster.Aliens, invaders.Level, invaders.level)
 }
