@@ -34,6 +34,8 @@ func NewEngine() *Invaders {
 	}
 
 	e.Game.Screen().SetFps(60)
+	e.Game.SetEndKey(g.KeyCtrlC)
+	e.Game.Screen().SetLevel(e.BaseLevel)
 	e.BaseLevel.AddEntity(&e)
 
 	return &e
@@ -51,6 +53,8 @@ func (e *Invaders) Update(ev g.Event) {
 }
 
 func (e *Invaders) initializeGame() {
+	prepareScreen(e)
+
 	e.Started = true
 
 	e.initPlayer()
