@@ -1,6 +1,7 @@
 package game
 
 import (
+	"strings"
 	"time"
 
 	"github.com/nsf/termbox-go"
@@ -37,6 +38,27 @@ func (canvas *Canvas) equals(other *Canvas) bool {
 		}
 	}
 	return true
+}
+
+func CanvasFromString(str string) Canvas {
+	lines := strings.Split(str, "\n")
+	runes := make([][]rune, len(lines))
+	width := 0
+	for i := range lines {
+		runes[i] = []rune(lines[i])
+		width = max(width, len(runes[i]))
+	}
+	height := len(runes)
+	canvas := make(Canvas, width)
+	for i := 0; i < width; i++ {
+		canvas[i] = make([]Cell, height)
+		for j := 0; j < height; j++ {
+			if i < len(runes[j]) {
+				canvas[i][j] = Cell{Character: runes[j][i]}
+			}
+		}
+	}
+	return canvas
 }
 
 type Cell struct {

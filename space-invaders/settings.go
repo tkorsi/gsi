@@ -18,9 +18,9 @@ type Settings struct {
 
 func NewSettigns(level *Level, baseLevel *g.BaseLevel) *Settings {
 	settings := Settings{Title: "Go Invaders", PressToQuit: "Press Enter to quit"}
-	settings.drawTitle(arena, level)
-	settings.drawPressToQuit(arena, level)
-	settings.drawScore(arena, level)
+	settings.drawTitle(level, baseLevel)
+	settings.drawPressToQuit(level, baseLevel)
+	settings.drawScore(level, baseLevel)
 
 	return &settings
 }
