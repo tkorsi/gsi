@@ -119,6 +119,10 @@ func termboxPixel(c *Canvas) {
 	}
 }
 
+func (s *Screen) TimeDelta() float64 {
+	return s.delta
+}
+
 func (s *Screen) SetFps(f float64) {
 	s.fps = f
 }
