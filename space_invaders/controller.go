@@ -1,4 +1,4 @@
-package spacee
+package spaceinvaders
 
 import (
 	_ "embed"
@@ -8,14 +8,14 @@ import (
 )
 
 var (
-	//go:embed files/tige.txt
-	tigeScreenFile []byte
+	//go:embed files/title.txt
+	titleScreenFile []byte
 
 	//go:embed files/game_over.txt
 	gameOverScreenFile []byte
 )
 
-func ShowTigeScreen(e *Invaders) {
+func ShowTitleScreen(e *Invaders) {
 	prepareScreen(e)
 	showTige(e)
 
@@ -50,12 +50,12 @@ func prepareScreen(e *Invaders) {
 	e.Game.Screen().SetLevel(e.BaseLevel)
 	e.BaseLevel.AddEntity(e)
 
-	e.initlevel()
-	e.initHud()
+	e.initLevel()
+	e.initSettings()
 }
 
 func showTige(e *Invaders) {
-	showCanvas(e, tigeScreenFile)
+	showCanvas(e, titleScreenFile)
 }
 
 func showGameOver(e *Invaders) {
@@ -65,13 +65,13 @@ func showGameOver(e *Invaders) {
 func showCanvas(e *Invaders, file []byte) {
 	canvas := CreateCanvas(file)
 
-	levelX, levelY := e.level.Position()
-	levelW, levelH := e.level.Size()
+	levelX, levelY := e.Level.Position()
+	levelW, levelH := e.Level.Size()
 
 	x := levelX + levelW/2 - len(canvas)/2
 	y := levelY + levelH/2 + -len(canvas[0]) - 1
 
-	e.baseLevel.AddEntity(g.NewEntityFromCanvas(x, y, canvas))
+	e.BaseLevel.AddEntity(g.NewEntityFromCanvas(x, y, canvas))
 }
 
 func showScore(e *Invaders) {
@@ -88,11 +88,11 @@ func showMaximizeScreen(e *Invaders) {
 }
 
 func showCenterText(text string, topPadding int, e *Invaders) {
-	levelX, levelY := e.level.Position()
-	levelW, levelH := e.level.Size()
+	levelX, levelY := e.Level.Position()
+	levelW, levelH := e.Level.Size()
 
 	x := levelX + levelW/2 - len(text)/2
 	y := levelY + levelH/2 + topPadding
 
-	e.baseLevel.AddEntity(g.NewText(x, y, text, g.ColorWhite, g.ColorBlack))
+	e.BaseLevel.AddEntity(g.NewText(x, y, text, g.ColorWhite, g.ColorBlack))
 }

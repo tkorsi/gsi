@@ -1,6 +1,7 @@
 package game
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -93,6 +94,20 @@ func (g *Game) Screen() *Screen {
 	return g.screen
 }
 
+func (g *Game) dumpLogs() {
+	if g.debug {
+		fmt.Println("=== Logs: ===")
+		for _, l := range g.logs {
+			fmt.Println(l)
+		}
+		fmt.Println("=============")
+	}
+}
+
+func (g *Game) SetEndKey(key Key) {
+	g.input.endKey = termbox.Key(key)
+}
+
 func (g *Game) SetScreen(s *Screen) {
 	g.screen = s
 	g.screen.resize(termbox.Size())
@@ -105,7 +120,8 @@ func (g *Game) Start() {
 	if err != nil {
 		panic(err)
 	}
-	//defer g.dumpLogs()
+
+	defer g.dumpLogs()
 	defer termbox.Close()
 	g.screen.resize(termbox.Size())
 

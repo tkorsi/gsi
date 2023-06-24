@@ -19,7 +19,7 @@ type AlienCluster struct {
 	IsMoving                 bool
 	IsMovingDown             bool
 	IsAllDead                bool
-	ReachedEndArena          bool
+	ReachedEndLevel          bool
 }
 
 func NewAlienCluster() *AlienCluster {
@@ -33,7 +33,7 @@ func NewAlienCluster() *AlienCluster {
 		Direction:                3,
 		MoveSize:                 3,
 		IsMoving:                 false,
-		ReachedEndArena:          false,
+		ReachedEndLevel:          false,
 		IsMovingDown:             false,
 	}
 
@@ -46,11 +46,11 @@ func NewAlienCluster() *AlienCluster {
 	return &alienCluster
 }
 
-func (alienCluster *AlienCluster) UpdateAliensPositions(timeDelta float64, arena *Arena) {
+func (alienCluster *AlienCluster) UpdateAliensPositions(timeDelta float64, level *Level) {
 	alienCluster.prepareMovement()
 
 	if alienCluster.canMove(timeDelta) {
-		alienCluster.move(arena)
+		alienCluster.move(level)
 	}
 }
 
@@ -60,14 +60,14 @@ func (alienCluster *AlienCluster) prepareMovement() {
 		alienCluster.IsMoving = false
 	}
 
-	if alienCluster.ReachedEndArena {
+	if alienCluster.ReachedEndLevel {
 		alienCluster.changeDirection()
 	}
 }
 
 func (alienCluster *AlienCluster) changeDirection() {
 	alienCluster.Direction *= -1
-	alienCluster.ReachedEndArena = false
+	alienCluster.ReachedEndLevel = false
 }
 
 func (alienCluster *AlienCluster) canMove(timeDelta float64) bool {
@@ -86,14 +86,14 @@ func (alienCluster *AlienCluster) isWaitingToMoveNextRow() bool {
 	return alienCluster.IsMoving && alienCluster.TimeToMove < alienCluster.WaitingTimeToMoveNextRow
 }
 
-func (alienCluster *AlienCluster) move(arena *Arena) {
+func (alienCluster *AlienCluster) move(level *Level) {
 	alienCluster.TimeToMove = 0
 	alienCluster.IsMoving = true
 
 	if alienCluster.IsMovingDown {
 		alienCluster.moveDown()
 	} else {
-		alienCluster.moveSideways(arena)
+		alienCluster.moveSideways(level)
 	}
 
 	alienCluster.CurrentRowMoving -= 1
@@ -113,7 +113,7 @@ func (alienCluster *AlienCluster) moveDown() {
 	}
 }
 
-func (alienCluster *AlienCluster) moveSideways(arena *Arena) {
+func (alienCluster *AlienCluster) moveSideways(level *Level) {
 	row := alienCluster.getCurrentLine()
 
 	for _, alien := range row {
@@ -124,7 +124,7 @@ func (alienCluster *AlienCluster) moveSideways(arena *Arena) {
 		alien.SetPosition(x, y)
 
 		if alien.IsAlive {
-			alienCluster.checkIfReachedEndOfArena(x, w, arena)
+			alienCluster.checkIfReachedEndOfLevel(x, w, level)
 		}
 	}
 }
@@ -134,9 +134,9 @@ func (alienCluster *AlienCluster) getCurrentLine() []*Alien {
 	return row
 }
 
-func (alienCluster *AlienCluster) checkIfReachedEndOfArena(x int, w int, arena *Arena) {
-	if alienCluster.CurrentRowMoving == 0 && (x+w >= arena.End-alienCluster.MoveSize || x <= arena.Init+alienCluster.MoveSize) {
-		alienCluster.ReachedEndArena = true
+func (alienCluster *AlienCluster) checkIfReachedEndOfLevel(x int, w int, level *Level) {
+	if alienCluster.CurrentRowMoving == 0 && (x+w >= level.End-alienCluster.MoveSize || x <= level.Init+alienCluster.MoveSize) {
+		alienCluster.ReachedEndLevel = true
 		alienCluster.IsMovingDown = true
 	}
 }
